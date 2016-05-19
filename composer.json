@@ -1,0 +1,26 @@
+{
+  "name": "algolia/php-content-parser",
+  "description": "Algolia PHP dom parser",
+  "type": "library",
+  "homepage": "https://github.com/algolia/php-content-parser",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Raymond Rutjes",
+      "email": "raymond.rutjes@algolia.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8 || ^5.0"
+  },
+  "autoload": {
+    "files": ["lib/simple_html_dom.php"],
+    "psr-4": {
+      "Algolia\\": "src/",
+      "Algolia\\Test\\": "tests/"
+    }
+  }
+}
