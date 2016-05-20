@@ -2,7 +2,7 @@
 
 namespace Algolia;
 
-class DOMParser
+final class DOMParser
 {
     /**
      * An array of attributeName => domSelector.
@@ -51,6 +51,8 @@ class DOMParser
 
     /**
      * Algolia_DOM_Parser constructor.
+     *
+     * @param array $attributes
      */
     public function __construct(array $attributes = array())
     {
@@ -99,27 +101,55 @@ class DOMParser
     }
 
     /**
-     * @param string $dom
+     * @param string      $dom
+     * @param string|null $rootSelector
      *
      * @return array
      */
-    public function parse($dom)
+    public function parse($dom, $rootSelector = null)
     {
-        $globalSelector = implode(',', $this->attributes);
         $dom = new \simple_html_dom((string) $dom);
 
-        $nodes = $dom->find($globalSelector);
+        if (is_string($rootSelector)) {
+            /* @var \simple_html_dom_node $dom */
+            $rootNodes = $dom->find($rootSelector);
+            if (empty($dom)) {
+                return array();
+            }
+        } else {
+            $rootNodes = array($dom);
+        }
+
+        foreach ($rootNodes as $rootNode) {
+            $this->parseNode($rootNode);
+        }
+
+        return $this->parsedObjects;
+    }
+
+    private function parseNode($rootNode)
+    {
+        $globalSelector = implode(',', $this->attributes);
+        $nodes = $rootNode->find($globalSelector);
         foreach ($nodes as $node) {
             /* @var \simple_html_dom_node $node */
             $attributeKey = $this->getMatchingAttributeKey($node);
             $level = $this->getAttributeLevel($attributeKey);
 
+            $attributeValue = $this->getAttributeValue($node);
+            if (empty($attributeValue)) {
+                // We skip empty values to not add ghost records.
+                continue;
+            }
+
+            // If we are deeper in the hierarchy, we need to create a record and go up to
+            // the current element level.
             if ($level <= $this->currentLevel) {
                 $this->publishCurrentObject();
                 $this->prepareCurrentObject($level);
             }
 
-            $this->setCurrentObjectAttribute($attributeKey, $node);
+            $this->setCurrentObjectAttribute($attributeKey, $attributeValue);
             $this->currentLevel = $level;
         }
         $this->publishCurrentObject();
@@ -128,17 +158,29 @@ class DOMParser
     }
 
     /**
-     * @param string                $attributeKey
      * @param \simple_html_dom_node $node
+     *
+     * @return mixed|string
      */
-    private function setCurrentObjectAttribute($attributeKey, \simple_html_dom_node $node)
+    private function getAttributeValue(\simple_html_dom_node $node)
     {
+        // Todo: filter ignored content.
         $text = $node->innertext();
         $text = strip_tags($text);
+        // $text = html_entity_decode($text);
         $text = preg_replace('/\s+/', ' ', $text);
         $text = trim($text);
 
-        $this->currentObject[$attributeKey] = $text;
+        return $text;
+    }
+
+    /**
+     * @param string $attributeKey
+     * @param string $attributeValue
+     */
+    private function setCurrentObjectAttribute($attributeKey, $attributeValue)
+    {
+        $this->currentObject[$attributeKey] = $attributeValue;
     }
 
     /**
