@@ -12,12 +12,12 @@ final class DOMParser
      * @var array
      */
     private $attributes = array(
-        'h1'      => 'h1',
-        'h2'      => 'h2',
-        'h3'      => 'h3',
-        'h4'      => 'h4',
-        'h5'      => 'h5',
-        'h6'      => 'h6',
+        'title1'  => 'h1',
+        'title2'  => 'h2',
+        'title3'  => 'h3',
+        'title4'  => 'h4',
+        'title5'  => 'h5',
+        'title6'  => 'h6',
         'content' => 'p, ul, ol, dl, table',
     );
 
