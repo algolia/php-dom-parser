@@ -18,7 +18,16 @@ class DOMParserTest extends \PHPUnit_Framework_TestCase
                 <div>
                 <h4>My h4 heading</h4>
                     <p>Awesome content</p>
-                    <p>Other content</p>
+                    <p>
+                        Other content
+                        <pre>
+                            Some code that should not be present.
+                        </pre>
+                        
+                    </p>
+                    <pre>
+                        Some code that should not be present.
+                    </pre>
                     <ul>
                         <li>Line 1</li>
                         <li>Line 2</li>
@@ -32,7 +41,7 @@ class DOMParserTest extends \PHPUnit_Framework_TestCase
                     <p></p>
                 </div>
         <h2>Second h2</h2>
-    
+        <script>alert('hello');</script>
 <h1>Another h1</h1>
 EOT;
 

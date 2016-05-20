@@ -22,17 +22,6 @@ final class DOMParser
     );
 
     /**
-     * All content in the listed selector will not pe parsed at all.
-     * //todo: use this.
-     *
-     * @var array
-     */
-    private $ignored = array(
-        'pre',
-        'script',
-    );
-
-    /**
      * Keeps track of the current depth in the hierarchy during parsing.
      *
      * @var int
@@ -50,16 +39,31 @@ final class DOMParser
     private $currentObject = array();
 
     /**
+     * All content in the listed selector will not pe parsed at all.
+     *
+     * @var array
+     */
+    private $exclude = array(
+        'pre',
+        'script',
+    );
+
+    /**
      * Algolia_DOM_Parser constructor.
      *
-     * @param array $attributes
+     * @param array      $attributes
+     * @param array|null $exclude
      */
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = array(), array $exclude = null)
     {
         if (!empty($attributes)) {
             $this->attributes = $attributes;
         }
         $this->currentObject = $this->getNewEmptyObject();
+
+        if (is_array($exclude)) {
+            $this->exclude = $exclude;
+        }
     }
 
     /**
@@ -164,10 +168,17 @@ final class DOMParser
      */
     private function getAttributeValue(\simple_html_dom_node $node)
     {
-        // Todo: filter ignored content.
+        // Remove excluded content.
+        $excludeSelector = implode(',', $this->exclude);
+        $excludedNodes = $node->find($excludeSelector);
+        foreach ($excludedNodes as $excludedNode) {
+            $excludedNode->outertext = '';
+        }
+
+        // Prepare text output.
         $text = $node->innertext();
         $text = strip_tags($text);
-        // $text = html_entity_decode($text);
+        $text = str_replace('&nbsp;', '', $text);
         $text = preg_replace('/\s+/', ' ', $text);
         $text = trim($text);
 
