@@ -13,6 +13,9 @@ final class DOMParser
     private $attributes = array();
 
     /**
+     * These attributes will be used if no attribute selectors
+     * were set with setAttributeSelectors.
+     *
      * @var array
      */
     private $defaultAttributes = array(
@@ -33,22 +36,31 @@ final class DOMParser
     private $currentLevel = -1;
 
     /**
+     * The resulting objects array buffer.
+     *
      * @var array
      */
     private $parsedObjects = array();
 
     /**
+     * Holds track of the next record that will be published once
+     * we reach a conflict in the hierarchy.
+     *
      * @var array
      */
     private $currentObject = array();
 
     /**
+     * The CSS starting point selector. If none were set we parse everything.
+     * If this matches multiple nodes, every match will be parsed.
+     *
      * @var string
      */
     private $rootSelector;
 
     /**
-     * All content in the listed selector will not pe parsed at all.
+     * All nodes matching the listed selectors
+     * will not be part of the resulting records.
      *
      * @var array
      */
@@ -56,6 +68,8 @@ final class DOMParser
 
     /**
      * Attributes that will be added to every record has is.
+     * The removes the need to manually travers the resulting
+     * fetched records just to insert these fields.
      *
      * @var array
      */
@@ -135,7 +149,7 @@ final class DOMParser
     {
         $new = $this->getNewEmptyObject();
         if (0 === $forAttributeLeveled) {
-            // We are at the root, no need to do copy anything.
+            // We are at the root, no need to copy anything.
             $this->currentObject = $new;
 
             return;
