@@ -223,8 +223,8 @@ final class DOMParser
         // Prepare text output.
         $text = $node->innertext();
         $text = strip_tags($text);
-        $text = str_replace('&nbsp;', '', $text);
-        $text = preg_replace('/\s+/', ' ', $text);
+        $text = str_replace('&nbsp;', ' ', $text);
+        $text = mb_ereg_replace('\s+', ' ', $text);
         $text = trim($text);
 
         return $text;
@@ -296,7 +296,6 @@ final class DOMParser
     private function emptyNodeContent(\simple_html_dom_node $node)
     {
         $node->innertext = '';
-        $node->outertext = '';
         foreach ($node->children() as $child) {
             $this->emptyNodeContent($child);
         }
