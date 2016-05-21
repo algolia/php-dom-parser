@@ -1,8 +1,8 @@
 # What is this repo
 
-A simple tool to turn DOM to Algolia friendly records.
+A simple tool to turn DOM into Algolia friendly records.
 
-This has been built with Wordpress articles indexing in mind,
+It has been built with Wordpress articles indexing in mind,
 but the tool is now abstracted enough to be re-used on other type of projects.
 
 For now the parsed DOM will result in the minimum possible number of records, meaning that if a node
@@ -36,7 +36,8 @@ $parser->setExcludeSelectors(array(
     'div.rp4wp-related-posts'
 ));
 
-// Only parse what is inside one or multiple CSS selectors.
+// Only parse what is inside a given CSS selectors.
+// If there are multiple nodes matching, they will all be parsed.
 $parser->setRootSelector('article.post');
 
 // Define your attributes sibling.
