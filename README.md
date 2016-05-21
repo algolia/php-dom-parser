@@ -1,5 +1,3 @@
-# What is this repo
-
 A simple tool to turn DOM into Algolia friendly records.
 
 It has been built with Wordpress articles indexing in mind,
@@ -52,6 +50,12 @@ $parser->setAttributeSelectors(
         'content' => 'p, ul, ol, dl, table',
     )
 );
+
+// Add some attributes that will be part of every record.
+$parser->setSharedAttributes(array(
+    'url'    => 'http://www.example.com',
+    'visits' => 1933,
+));
 
 // Turn the DOM into Algolia search friendly records.
 $records = $parser->parse($article);

@@ -151,4 +151,41 @@ EOT;
         $objects = $parser->parse($this->content);
         $this->assertEquals($expected, $objects);
     }
+
+    public function testSharedAttributes()
+    {
+        $expected = array(
+            array(
+                'url'     => 'http://www.example.com',
+                'visits'  => 1933,
+                'title1'  => '',
+                'title2'  => 'My h2 heading',
+                'title3'  => '',
+                'title4'  => '',
+                'title5'  => '',
+                'title6'  => '',
+                'content' => 'My first paragraph',
+            ),
+            array(
+                'url'     => 'http://www.example.com',
+                'visits'  => 1933,
+                'title1'  => '',
+                'title2'  => 'My h2 heading',
+                'title3'  => 'My h3 heading',
+                'title4'  => '',
+                'title5'  => '',
+                'title6'  => '',
+                'content' => '',
+            ),
+        );
+
+        $parser = new DOMParser();
+        $parser->setRootSelector('article');
+        $parser->setSharedAttributes(array(
+            'url'    => 'http://www.example.com',
+            'visits' => 1933,
+        ));
+        $objects = $parser->parse($this->content);
+        $this->assertEquals($expected, $objects);
+    }
 }

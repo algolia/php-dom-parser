@@ -55,6 +55,13 @@ final class DOMParser
     private $exclude = array();
 
     /**
+     * Attributes that will be added to every record has is.
+     *
+     * @var array
+     */
+    private $sharedAttributes = array();
+
+    /**
      * Reset the state of the parser.
      */
     private function init()
@@ -66,6 +73,14 @@ final class DOMParser
         $this->currentLevel = -1;
         $this->parsedObjects = array();
         $this->currentObject = $this->getNewEmptyObject();
+    }
+
+    /**
+     * @param $attributes
+     */
+    public function setSharedAttributes($attributes)
+    {
+        $this->sharedAttributes = $attributes;
     }
 
     /**
@@ -260,7 +275,7 @@ final class DOMParser
 
     private function publishCurrentObject()
     {
-        $this->parsedObjects[] = $this->currentObject;
+        $this->parsedObjects[] = $this->sharedAttributes + $this->currentObject;
     }
 
     /**
