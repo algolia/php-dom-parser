@@ -26,6 +26,7 @@ class DOMParserTest extends \PHPUnit_Framework_TestCase
                         
                     </p>
                     <pre>
+                        <p>Some html inside pre</p>
                         Some code that should not be present.
                     </pre>
                     <ul>
@@ -41,7 +42,10 @@ class DOMParserTest extends \PHPUnit_Framework_TestCase
                     <p></p>
                 </div>
         <h2>Second h2</h2>
-        <script>alert('hello');</script>
+        <script>
+            alert('hello');
+            <p>Some weird nested tag.</p>
+        </script>
 <h1>Another h1</h1>
 EOT;
 
@@ -114,6 +118,7 @@ EOT;
         );
 
         $parser = new DOMParser();
+        $parser->setExcludeSelectors(array('pre'));
         $objects = $parser->parse($this->content);
         $this->assertEquals($expected, $objects);
     }
@@ -142,7 +147,8 @@ EOT;
         );
 
         $parser = new DOMParser();
-        $objects = $parser->parse($this->content, 'article');
+        $parser->setRootSelector('article');
+        $objects = $parser->parse($this->content);
         $this->assertEquals($expected, $objects);
     }
 }

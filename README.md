@@ -1,8 +1,12 @@
 # What is this repo
 
-A simple way to extract Algolia's search engine friendly records.
+A simple tool to turn DOM to Algolia friendly records.
 
-This has mainly been built for the Wordpress articles indexing in mind, but the tool is abstracted enough to be re-used on other type of projects.
+This has been built with Wordpress articles indexing in mind,
+but the tool is now abstracted enough to be re-used on other type of projects.
+
+For now the parsed DOM will result in the minimum possible number of records, meaning that if a node
+has at least one child, it will never have a record on its own. If we need such a behaviour, we could easily add it.
 
 
 ## Installation
@@ -25,7 +29,31 @@ $article = file_get_contents('https://blog.algolia.com/how-we-re-invented-our-of
 
 $parser = new \Algolia\DOMParser();
 
-$records = $parser->parse($article, 'article.post');
+// Exclude content by CSS selectors.
+$parser->setExcludeSelectors(array(
+    'pre',
+    '.entry-meta',
+    'div.rp4wp-related-posts'
+));
+
+// Only parse what is inside one or multiple CSS selectors.
+$parser->setRootSelector('article.post');
+
+// Define your attributes sibling.
+$parser->setAttributeSelectors(
+	array(
+        'title1'  => 'h1',
+        'title2'  => 'h2',
+        'title3'  => 'h3',
+        'title4'  => 'h4',
+        'title5'  => 'h5',
+        'title6'  => 'h6',
+        'content' => 'p, ul, ol, dl, table',
+    )
+);
+
+// Turn the DOM into Algolia search friendly records.
+$records = $parser->parse($article);
 
 var_dump($records);
 ```

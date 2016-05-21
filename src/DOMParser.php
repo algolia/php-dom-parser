@@ -7,11 +7,15 @@ final class DOMParser
     /**
      * An array of attributeName => domSelector.
      * Order matters and will determine the hierarchy of the page.
-     * Only tags are supported for now.
      *
      * @var array
      */
-    private $attributes = array(
+    private $attributes = array();
+
+    /**
+     * @var array
+     */
+    private $defaultAttributes = array(
         'title1'  => 'h1',
         'title2'  => 'h2',
         'title3'  => 'h3',
@@ -39,31 +43,61 @@ final class DOMParser
     private $currentObject = array();
 
     /**
+     * @var string
+     */
+    private $rootSelector;
+
+    /**
      * All content in the listed selector will not pe parsed at all.
      *
      * @var array
      */
-    private $exclude = array(
-        'pre',
-        'script',
-    );
+    private $exclude = array();
 
     /**
-     * Algolia_DOM_Parser constructor.
-     *
-     * @param array      $attributes
-     * @param array|null $exclude
+     * Reset the state of the parser.
      */
-    public function __construct(array $attributes = array(), array $exclude = null)
+    private function init()
     {
-        if (!empty($attributes)) {
-            $this->attributes = $attributes;
+        if (empty($this->attributes)) {
+            $this->attributes = $this->defaultAttributes;
         }
-        $this->currentObject = $this->getNewEmptyObject();
 
-        if (is_array($exclude)) {
-            $this->exclude = $exclude;
-        }
+        $this->currentLevel = -1;
+        $this->parsedObjects = array();
+        $this->currentObject = $this->getNewEmptyObject();
+    }
+
+    /**
+     * @param string $selector
+     */
+    public function setRootSelector($selector)
+    {
+        $this->rootSelector = (string) $selector;
+    }
+
+    /**
+     * Removes the root selector.
+     */
+    public function removeRootSelector()
+    {
+        $this->rootSelector = null;
+    }
+
+    /**
+     * @param array $selectors
+     */
+    public function setAttributeSelectors(array $selectors)
+    {
+        $this->attributes = $selectors;
+    }
+
+    /**
+     * @param array $selectors
+     */
+    public function setExcludeSelectors(array $selectors)
+    {
+        $this->exclude = $selectors;
     }
 
     /**
@@ -105,18 +139,21 @@ final class DOMParser
     }
 
     /**
-     * @param string      $dom
-     * @param string|null $rootSelector
+     * @param string $dom
      *
      * @return array
      */
-    public function parse($dom, $rootSelector = null)
+    public function parse($dom)
     {
+        $this->init();
         $dom = new \simple_html_dom((string) $dom);
 
-        if (is_string($rootSelector)) {
+        // We filter the exclusion first to be able to use a global selector.
+        $this->filterExcluded($dom);
+
+        if (null !== $this->rootSelector) {
             /* @var \simple_html_dom_node $dom */
-            $rootNodes = $dom->find($rootSelector);
+            $rootNodes = $dom->find($this->rootSelector);
             if (empty($dom)) {
                 return array();
             }
@@ -168,13 +205,6 @@ final class DOMParser
      */
     private function getAttributeValue(\simple_html_dom_node $node)
     {
-        // Remove excluded content.
-        $excludeSelector = implode(',', $this->exclude);
-        $excludedNodes = $node->find($excludeSelector);
-        foreach ($excludedNodes as $excludedNode) {
-            $excludedNode->outertext = '';
-        }
-
         // Prepare text output.
         $text = $node->innertext();
         $text = strip_tags($text);
@@ -231,5 +261,29 @@ final class DOMParser
     private function publishCurrentObject()
     {
         $this->parsedObjects[] = $this->currentObject;
+    }
+
+    /**
+     * @param \simple_html_dom $dom
+     */
+    private function filterExcluded(\simple_html_dom $dom)
+    {
+        $excludeSelector = implode(',', $this->exclude);
+        $excludedNodes = $dom->find($excludeSelector);
+        foreach ($excludedNodes as $excludedNode) {
+            $this->emptyNodeContent($excludedNode);
+        }
+    }
+
+    /**
+     * @param \simple_html_dom_node $node
+     */
+    private function emptyNodeContent(\simple_html_dom_node $node)
+    {
+        $node->innertext = '';
+        $node->outertext = '';
+        foreach ($node->children() as $child) {
+            $this->emptyNodeContent($child);
+        }
     }
 }
