@@ -63,6 +63,8 @@ $records = $parser->parse($article);
 var_dump($records);
 ```
 
+You will find some example of scripts / outputs in the examples folder so that you don't have to run anything to give feedback.
+
 ### Little CLI
 
 `dynamic.php` is a little cli for dynamically fetching the dom of some url.

@@ -14,4 +14,6 @@ $parser->setRootSelector('article.post');
 
 $records = $parser->parse($article);
 
-var_dump($records);
+$json = json_encode($records, JSON_PRETTY_PRINT);
+
+echo $json;
