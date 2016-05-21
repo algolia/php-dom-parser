@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/algolia/php-dom-parser.svg?branch=master)](https://travis-ci.org/algolia/php-dom-parser)
+
 A simple tool to turn DOM into Algolia search friendly record objects.
 
 It has been built with Wordpress articles indexing in mind,
