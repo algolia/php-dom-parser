@@ -1,4 +1,4 @@
-A simple tool to turn DOM into Algolia friendly records.
+A simple tool to turn DOM into Algolia search friendly record objects.
 
 It has been built with Wordpress articles indexing in mind,
 but the tool is now abstracted enough to be re-used on other type of projects.
@@ -10,8 +10,7 @@ has at least one child, it will never have a record on its own. If we need such 
 ## Installation
 
 ```
-$ composer update
-$ php examples/simple.php
+$ composer require algolia/php-dom-parser
 ```
 
 ## Examples
@@ -21,8 +20,6 @@ $ php examples/simple.php
 Here is a simple example where we grab the content of an article of Algolia's blog and parse it to obtain the records.
 
 ```php
-require_once __DIR__ . '/../vendor/autoload.php';
-
 $article = file_get_contents('https://blog.algolia.com/how-we-re-invented-our-office-space-in-paris/');
 
 $parser = new \Algolia\DOMParser();
@@ -70,6 +67,8 @@ You will find some example of scripts / outputs in the examples folder so that y
 `dynamic.php` is a little cli for dynamically fetching the dom of some url.
 You can optionally pass a root selector as second argument.
 
+This script was mainly built for testing in the early stages, and we have no intention to develop it further for now.
+
 ```
 $ php examples/dynamic.php https://blog.algolia.com/inside-the-algolia-engine-part-2-the-indexing-challenge-of-instant-search/ article.post
 ```
@@ -80,4 +79,14 @@ Test the code.
 ```
 vendor/bin/phpunit
 ```
+
+## Contributing
+
+Please do contribute:
+
+- if you have an idea, a question or just want to say hi: create an issue
+- if you have a bug fix: create a PR
+
+Please ensure the tests passes and also please run [php-cs-fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to ensure
+the code styles remain consistent.
 

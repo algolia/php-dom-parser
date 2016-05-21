@@ -1,8 +1,8 @@
 {
-  "name": "algolia/php-content-parser",
-  "description": "Algolia PHP dom parser",
+  "name": "algolia/php-dom-parser",
+  "description": "A simple tool to turn DOM into Algolia search friendly record objects.",
   "type": "library",
-  "homepage": "https://github.com/algolia/php-content-parser",
+  "homepage": "https://github.com/algolia/php-dom-parser",
   "license": "MIT",
   "authors": [
     {
