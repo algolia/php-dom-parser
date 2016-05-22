@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 0.0.3
+- Fixed an issue when parsing an empty string.
+
 ### 0.0.2
 - Added a way to parse content from a URL.
 

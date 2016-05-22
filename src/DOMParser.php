@@ -177,6 +177,10 @@ final class DOMParser
         $this->init();
         $dom = new \simple_html_dom((string) $dom);
 
+        if (null === $dom->root) {
+            return array();
+        }
+
         // We filter the exclusion first to be able to use a global selector.
         $this->filterExcluded($dom);
 

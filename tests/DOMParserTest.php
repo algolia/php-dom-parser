@@ -206,4 +206,11 @@ EOT;
         $parser = new DOMParser();
         $parser->parseURL('https://nothing.algolia.biz');
     }
+
+    public function testHandlesEmptyStringGracefully()
+    {
+        $parser = new DOMParser();
+        $records = $parser->parse('');
+        $this->assertEquals(array(), $records);
+    }
 }
