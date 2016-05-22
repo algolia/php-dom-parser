@@ -197,6 +197,42 @@ final class DOMParser
         return $this->parsedObjects;
     }
 
+    /**
+     * @param string $url
+     * @param int    $timeout
+     *
+     * @return array
+     */
+    public function parseURL($url, $timeout = 2)
+    {
+        if (false === filter_var($url, FILTER_VALIDATE_URL)) {
+            throw new \InvalidArgumentException(sprintf("'%s' is not a valid URL.", $url));
+        }
+
+        $exploded = explode('://', $url);
+        $protocol = $exploded[0];
+
+        $context = stream_context_create(
+            array(
+                $protocol => array(
+                    'timeout' => (int) $timeout,
+                ),
+            )
+        );
+
+        $dom = false;
+        try {
+            $dom = file_get_contents($url, false, $context);
+        } catch (\Exception $e) {
+        }
+
+        if (false === $dom) {
+            throw new \RuntimeException(sprintf("Unable to parse URL '%s'", $url));
+        }
+
+        return $this->parse($dom);
+    }
+
     private function parseNode($rootNode)
     {
         $globalSelector = implode(',', $this->attributes);

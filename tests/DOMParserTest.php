@@ -188,4 +188,22 @@ EOT;
         $objects = $parser->parse($this->content);
         $this->assertEquals($expected, $objects);
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testParseURLChecksURLValidity()
+    {
+        $parser = new DOMParser();
+        $parser->parseURL('not_a_url');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testParseURLRaisesAnExceptionIfUnreachableURL()
+    {
+        $parser = new DOMParser();
+        $parser->parseURL('https://nothing.algolia.biz');
+    }
 }
