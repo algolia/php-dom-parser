@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 0.1.0
+- `DOMParser::Parse` now returns at least 1 record if shared attributes are set.
+
 ### 0.0.3
 - Fixed an issue when parsing an empty string.
 
