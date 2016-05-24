@@ -178,7 +178,11 @@ final class DOMParser
         $dom = new \simple_html_dom((string) $dom);
 
         if (null === $dom->root) {
-            return array();
+            if (!empty($this->sharedAttributes)) {
+                $this->publishCurrentObject();
+            }
+
+            return $this->parsedObjects;
         }
 
         // We filter the exclusion first to be able to use a global selector.

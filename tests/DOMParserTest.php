@@ -213,4 +213,38 @@ EOT;
         $records = $parser->parse('');
         $this->assertEquals(array(), $records);
     }
+
+    public function testReturnsAtLeast1RecordIfSharedAttributesAreGiven()
+    {
+        $parser = new DOMParser();
+
+        $parser->setSharedAttributes(array(
+            'url'  => 'http://example.com',
+            'name' => 'The Name',
+        ));
+
+        $expected = array(
+            array(
+                'url'     => 'http://example.com',
+                'name'    => 'The Name',
+                'title1'  => '',
+                'title2'  => '',
+                'title3'  => '',
+                'title4'  => '',
+                'title5'  => '',
+                'title6'  => '',
+                'content' => '',
+            ),
+        );
+        $records = $parser->parse('');
+        $this->assertEquals($expected, $records);
+
+        $dom = <<<EOT
+<div>
+    <div>Some content</div>
+</div>
+EOT;
+        $records = $parser->parse($dom);
+        $this->assertEquals($expected, $records);
+    }
 }
