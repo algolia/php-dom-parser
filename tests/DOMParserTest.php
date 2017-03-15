@@ -267,7 +267,16 @@ EOT;
                 'title4'  => '',
                 'title5'  => '',
                 'title6'  => '',
-                'content' => 'paragraph',
+                'content' => 'paragra',
+            ),
+            array(
+                'title1'  => '',
+                'title2'  => 'My h2 heading',
+                'title3'  => '',
+                'title4'  => '',
+                'title5'  => '',
+                'title6'  => '',
+                'content' => 'ph',
             ),
             array(
                 'title1'  => '',

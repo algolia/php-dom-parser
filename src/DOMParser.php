@@ -393,7 +393,7 @@ final class DOMParser
     /**
      * Returns an array of strings. Each string will conform the attribute's
      * max size if provided.
-     * 
+     *
      * @param string $attributeKey
      * @param string $attributeValue
      *
@@ -419,9 +419,8 @@ final class DOMParser
 
             $cutAtPosition = mb_strpos($attributeValue, ' ', $maxSize);
             if (false === $cutAtPosition) {
-                $values[] = $attributeValue;
-
-                return $values;
+                // If no space is found, we cut at maxSize
+                $cutAtPosition = $maxSize;
             }
 
             $values[] = mb_strcut($attributeValue, 0, $cutAtPosition);
