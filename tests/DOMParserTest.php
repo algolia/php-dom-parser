@@ -6,7 +6,7 @@ use Algolia\DOMParser;
 
 class DOMParserTest extends \PHPUnit_Framework_TestCase
 {
-    private $content = <<<EOT
+    private $content = <<<'EOT'
 <h1>My h1 heading</h1>
     <h3>     </h3>
     <article>
@@ -239,7 +239,7 @@ EOT;
         $records = $parser->parse('');
         $this->assertEquals($expected, $records);
 
-        $dom = <<<EOT
+        $dom = <<<'EOT'
 <div>
     <div>Some content</div>
 </div>
