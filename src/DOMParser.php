@@ -85,20 +85,6 @@ final class DOMParser
     private $sharedAttributes = array();
 
     /**
-     * Reset the state of the parser.
-     */
-    private function init()
-    {
-        if (empty($this->attributes)) {
-            $this->attributes = $this->defaultAttributes;
-        }
-
-        $this->currentLevel = -1;
-        $this->parsedObjects = array();
-        $this->currentObject = $this->getNewEmptyObject();
-    }
-
-    /**
      * @param $attributes
      */
     public function setSharedAttributes($attributes)
@@ -136,44 +122,6 @@ final class DOMParser
     public function setExcludeSelectors(array $selectors)
     {
         $this->exclude = $selectors;
-    }
-
-    /**
-     * @return array
-     */
-    private function getNewEmptyObject()
-    {
-        $object = array();
-        foreach ($this->attributes as $attributeKey => $selector) {
-            $object[$attributeKey] = '';
-        }
-
-        return $object;
-    }
-
-    /**
-     * @param int $forAttributeLeveled
-     */
-    private function prepareCurrentObject($forAttributeLeveled)
-    {
-        $new = $this->getNewEmptyObject();
-        if (0 === $forAttributeLeveled) {
-            // We are at the root, no need to copy anything.
-            $this->currentObject = $new;
-
-            return;
-        }
-
-        $counter = 0;
-        foreach ($this->attributes as $attributeKey => $selector) {
-            // We copy the values till we reached the expected level.
-            $new[$attributeKey] = $this->currentObject[$attributeKey];
-
-            if (++$counter === $forAttributeLeveled) {
-                break;
-            }
-        }
-        $this->currentObject = $new;
     }
 
     /**
@@ -248,6 +196,72 @@ final class DOMParser
         }
 
         return $this->parse($dom);
+    }
+
+    /**
+     * @param string $attribute the attribute to limit in size
+     * @param int    $maxSize   the max size in bytes for the attribute
+     */
+    public function setAttributeMaxSize($attribute, $maxSize)
+    {
+        $maxSize = (int) $maxSize;
+        if ($maxSize <= 0) {
+            throw new \InvalidArgumentException('Max size should be a positive integer greater than zero.');
+        }
+
+        $this->attributeMaxSizes[(string) $attribute] = $maxSize;
+    }
+
+    /**
+     * Reset the state of the parser.
+     */
+    private function init()
+    {
+        if (empty($this->attributes)) {
+            $this->attributes = $this->defaultAttributes;
+        }
+
+        $this->currentLevel = -1;
+        $this->parsedObjects = array();
+        $this->currentObject = $this->getNewEmptyObject();
+    }
+
+    /**
+     * @return array
+     */
+    private function getNewEmptyObject()
+    {
+        $object = array();
+        foreach ($this->attributes as $attributeKey => $selector) {
+            $object[$attributeKey] = '';
+        }
+
+        return $object;
+    }
+
+    /**
+     * @param int $forAttributeLeveled
+     */
+    private function prepareCurrentObject($forAttributeLeveled)
+    {
+        $new = $this->getNewEmptyObject();
+        if (0 === $forAttributeLeveled) {
+            // We are at the root, no need to copy anything.
+            $this->currentObject = $new;
+
+            return;
+        }
+
+        $counter = 0;
+        foreach ($this->attributes as $attributeKey => $selector) {
+            // We copy the values till we reached the expected level.
+            $new[$attributeKey] = $this->currentObject[$attributeKey];
+
+            if (++$counter === $forAttributeLeveled) {
+                break;
+            }
+        }
+        $this->currentObject = $new;
     }
 
     private function parseNode($rootNode)
@@ -326,7 +340,7 @@ final class DOMParser
         }
         $keys = array_keys($this->attributes);
 
-        return array_search($attributeKey, $keys);
+        return array_search($attributeKey, $keys, true);
     }
 
     /**
@@ -340,7 +354,7 @@ final class DOMParser
         foreach ($this->attributes as $attributeKey => $selector) {
             $selector = str_replace(' ', '', $selector);
             $selectorTags = explode(',', $selector);
-            if (in_array($tag, $selectorTags)) {
+            if (in_array($tag, $selectorTags, true)) {
                 return $attributeKey;
             }
         }
@@ -377,23 +391,9 @@ final class DOMParser
     }
 
     /**
-     * @param string $attribute The attribute to limit in size.
-     * @param int    $maxSize   The max size in bytes for the attribute.
-     */
-    public function setAttributeMaxSize($attribute, $maxSize)
-    {
-        $maxSize = (int) $maxSize;
-        if ($maxSize <= 0) {
-            throw new \InvalidArgumentException('Max size should be a positive integer greater than zero.');
-        }
-
-        $this->attributeMaxSizes[(string) $attribute] = $maxSize;
-    }
-
-    /**
      * Returns an array of strings. Each string will conform the attribute's
      * max size if provided.
-     * 
+     *
      * @param string $attributeKey
      * @param string $attributeValue
      *
@@ -419,9 +419,8 @@ final class DOMParser
 
             $cutAtPosition = mb_strpos($attributeValue, ' ', $maxSize);
             if (false === $cutAtPosition) {
-                $values[] = $attributeValue;
-
-                return $values;
+                // If no space is found, we cut at maxSize
+                $cutAtPosition = $maxSize;
             }
 
             $values[] = mb_strcut($attributeValue, 0, $cutAtPosition);
