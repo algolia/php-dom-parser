@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 0.5.0
+- Truncate an attribute even if no space is found and if max size is defined.
+
 ### 0.4.0
 - Avoid trying to use the dom string to load a file.
 
