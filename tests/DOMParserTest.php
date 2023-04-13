@@ -3,8 +3,11 @@
 namespace Algolia\Test;
 
 use Algolia\DOMParser;
+use InvalidArgumentException;
+use RuntimeException;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
-class DOMParserTest extends \PHPUnit_Framework_TestCase
+class DOMParserTest extends TestCase
 {
     private $content = <<<'EOT'
 <h1>My h1 heading</h1>
@@ -189,20 +192,18 @@ EOT;
         $this->assertEquals($expected, $objects);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testParseURLChecksURLValidity()
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $parser = new DOMParser();
         $parser->parseURL('not_a_url');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testParseURLRaisesAnExceptionIfUnreachableURL()
     {
+        $this->expectException(RuntimeException::class);
+
         $parser = new DOMParser();
         $parser->parseURL('https://nothing.algolia.biz');
     }
@@ -296,11 +297,10 @@ EOT;
         $this->assertEquals($expected, $objects);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testAttributeMaxSizeIsPostiveInteger()
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $parser = new DOMParser();
         $parser->setAttributeMaxSize('content', -1);
     }
