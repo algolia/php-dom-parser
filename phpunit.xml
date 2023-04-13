@@ -7,16 +7,10 @@
          stopOnIncomplete="false"
          stopOnSkipped="false"
          verbose="true"
-         debug="true"
          bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite name="main">
             <directory suffix="Test.php">tests/</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
 </phpunit>
